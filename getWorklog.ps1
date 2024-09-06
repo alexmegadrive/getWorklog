@@ -3,8 +3,8 @@ $WORK_HOURS_PER_DAY = 8
 $REPO_PATH = "C:\"  # Укажите здесь путь к вашему репозиторию
 $START_DATE = "2024-08-01"  # Укажите здесь начальную дату в формате YYYY-MM-DD
 $FILE_NAME = "worklog-$START_DATE"
-$MESSAGE_MAX_LENGTH = 300
-$TASK_PATTERN = '([A-Z]{3,7}-\d+)'
+$TASK_PATTERN = '([A-Z]{3,7}-\d+)' # паттерн названия задачи, пример: TEST-12345
+$MESSAGE_MAX_LENGTH = 300 # максимальная длина сгруппированного сообщения с коммитами
 
 # Настройка кодировки
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -89,10 +89,10 @@ $results = $commits | Group-Object Date | ForEach-Object {
         $percentage = if ($totalChangesForDay -gt 0) { [math]::Round(($taskChanges / $totalChangesForDay) * 100, 2) } else { 0 }
         $hours = [math]::Round(($percentage / 100) * $WORK_HOURS_PER_DAY, 2)
 
-        # Обрезаем сообщение коммита до 50 символов, если оно длиннее, и добавляем многоточие
-        $commitMessages = $taskCommits.Message -join ";`n                    "
+        
+        $commitMessages = $taskCommits.Message -join ";"
         if ($commitMessages.Length -gt $MESSAGE_MAX_LENGTH) {
-            $commitMessages = $commitMessages.Substring(0, $MESSAGE_MAX_LENGTH) + "..."  # Обрезаем до 50 символов и добавляем многоточие
+            $commitMessages = $commitMessages.Substring(0, $MESSAGE_MAX_LENGTH) + "..."  # Обрезаем сообщение коммита до максимальной длины
         }
 
         # Отладочный вывод TaskNumber
